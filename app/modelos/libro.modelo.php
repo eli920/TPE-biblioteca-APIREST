@@ -11,9 +11,30 @@ class LibroModelo extends ModeloBase{
     //     $this->bd = new PDO('mysql:host=localhost;dbname=tpe-biblioteca;charset=utf8', 'root', '');
     //  }
 
-    public function obtenerLibros() {
+    public function obtenerLibros($filtrarAutor = 0, $ordenar = false) {
+        $sql = 'SELECT * FROM libro';
+        
+        //CONSULTAR COMO HACER PETICIONES CON AMBOS, NO FUNCIONA
 
-        $consulta = $this->bd->prepare('SELECT * FROM libro');
+        //CONSULTAR SI HAY QUE PREVENIR ALGUN TIPO DE ERROR
+        if($filtrarAutor > 0) {
+            //HAY QUE DEJARLO SEPARADO, SINO NO ANDA
+            $sql .= ' WHERE id_autor = ';
+            $sql .= $filtrarAutor;
+        }
+        
+        //ordenar por titulo de forma ascendente/descendente
+        if($ordenar) {
+            $sql .= ' ORDER BY titulo ';
+            if($ordenar === 'ASC') {
+                $sql .= 'ASC';
+            } else {
+                $sql .= 'DESC';
+            }
+            //CONSULTAR SI HAY QUE AGREGAR ALGO QUE CONTROLE POSIBLE ERROR
+        }
+
+        $consulta = $this->bd->prepare($sql);
         $consulta->execute();
     
         $libros = $consulta->fetchAll(PDO::FETCH_OBJ); 
