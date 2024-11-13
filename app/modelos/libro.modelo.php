@@ -6,33 +6,40 @@ class LibroModelo extends ModeloBase{
         parent::__construct();
     }
 
-    // private $bd;
-    // public function __construct() {
-    //     $this->bd = new PDO('mysql:host=localhost;dbname=tpe-biblioteca;charset=utf8', 'root', '');
-    //  }
-
-    public function obtenerLibros($filtrarAutor = 0, $ordenar = false) {
+    public function obtenerLibros($anio_publicacion = 0, $ordenar = false, $direccion=false) {
         $sql = 'SELECT * FROM libro';
         
-        //CONSULTAR COMO HACER PETICIONES CON AMBOS, NO FUNCIONA
-
-        //CONSULTAR SI HAY QUE PREVENIR ALGUN TIPO DE ERROR
-        if($filtrarAutor > 0) {
-            //HAY QUE DEJARLO SEPARADO, SINO NO ANDA
-            $sql .= ' WHERE id_autor = ';
-            $sql .= $filtrarAutor;
+        //Filtro por año
+        if($anio_publicacion>0) {
+            $sql .= ' WHERE anio_publicacion = ';
+            $sql .= $anio_publicacion;
         }
         
-        //ordenar por titulo de forma ascendente/descendente
+        //Orden por campos
         if($ordenar) {
-            $sql .= ' ORDER BY titulo ';
-            if($ordenar === 'ASC') {
-                $sql .= 'ASC';
-            } else {
-                $sql .= 'DESC';
+            switch($ordenar) {
+                case 'titulo':
+                    $sql .= ' ORDER BY titulo';
+                    break;
+                case 'genero':
+                    $sql .= ' ORDER BY genero';
+                    break;
+                case 'editorial':
+                    $sql .= ' ORDER BY editorial';
+                    break;
+                case 'anio_publicacion':
+                    $sql .= ' ORDER BY anio_publicacion';
+                    break;
+                case 'id_autor':
+                    $sql .= ' ORDER BY id_autor';
+                    break;
             }
-            //CONSULTAR SI HAY QUE AGREGAR ALGO QUE CONTROLE POSIBLE ERROR
         }
+
+         // Dirección de ordenamiento (ASC o DESC)
+        if($direccion) 
+            $sql .= ' '.$direccion;
+        
 
         $consulta = $this->bd->prepare($sql);
         $consulta->execute();
@@ -63,7 +70,7 @@ class LibroModelo extends ModeloBase{
     public function insertarLibro($titulo, $genero, $editorial, $anio_publicacion, $sinopsis, $autor) { 
         $consulta = $this->bd->prepare('INSERT INTO libro (titulo, genero, editorial, anio_publicacion, sinopsis, id_autor) VALUES (?, ?, ?, ?, ?,?)');
         $consulta->execute([$titulo, $genero, $editorial, $anio_publicacion, $sinopsis, $autor]);
-        //Obtengo el ide de la última fila que inserte
+        //Obtengo el id de la última fila que inserte
         $id = $this->bd->lastInsertId();//Funcion propia de php para obtener último id
     
         return $id;

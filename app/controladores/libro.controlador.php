@@ -12,17 +12,27 @@ class LibroControlador{
     }
 
     public function traerLibros($req, $res){
-        $filtrarAutor = 0;
-        if(isset($req->query->filtrarAutor)) {
-            $filtrarAutor = $req->query->filtrarAutor;
+        $anio_publicacion = 0;//Filtro por año
+        if(isset($req->query->anio_publicacion)) {
+            $anio_publicacion = $req->query->anio_publicacion;
+            
         }
-        
-        $ordenar = false; //variable para ordenar asc/desc 
+
+        $ordenar = false; //variable para ordenar segun campo
         if(isset($req->query->ordenar)) {
             $ordenar = $req->query->ordenar;
         }
 
-        $libros= $this->modelo->obtenerLibros($filtrarAutor, $ordenar);
+        $direccion = false; //variable para ordenar ASC/DESC
+        if(isset($req->query->direccion)) {
+            $direccion = $req->query->direccion;
+        }
+
+        $libros= $this->modelo->obtenerLibros($anio_publicacion, $ordenar, $direccion);
+        if (!$libros) {
+            return $this->vista->response("Sin resultados", 404);
+        }
+
         return $this->vista->response($libros);
     }
 
