@@ -1,7 +1,6 @@
 <?php
 require_once './bibliotecas/router.php';
 require_once './app/controladores/libro.controlador.php';
-// require_once './app/controladores/autor.controlador.php';
 
 $router = new Router();
 
